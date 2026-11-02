@@ -6,7 +6,7 @@
   <!-- (1) スマホ対応に必須の1行。これがないとスマホでPC幅のまま縮小表示される -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Refashion Index</title>
-  <meta name="description" content="服のリメイク方法を紹介しているInstagram・YouTubeの投稿を、持っている服の悩み・作りたい服の種類で探せるまとめサイトです。">
+  <meta name="description" content="服のリメイク方法を紹介しているSNSの投稿を、持っている服の悩み・作りたい服の種類で探せるまとめサイトです。">
 
   <!-- (2) アクセス計測タグ（Cloudflare Web Analytics や GA4）はここに貼る -->
 
@@ -85,6 +85,10 @@
       font-size: 13px;
       color: var(--sub);
       margin: 4px 0 0;
+    }
+
+    header a {
+      color: var(--accent);
     }
 
     .layout {
@@ -236,21 +240,6 @@
       margin: 0 0 8px;
     }
 
-    .pill {
-      display: inline-block;
-      font-size: 11px;
-      padding: 2px 8px;
-      margin: 0 4px 4px 0;
-      border-radius: 999px;
-      background: var(--bg);
-      color: var(--sub);
-    }
-
-    .pill.lv {
-      background: var(--accent-bg);
-      color: var(--accent);
-    }
-
     .src {
       margin-top: auto;
       padding-top: 4px;
@@ -290,6 +279,8 @@
     <div class="head-text">
       <h1 data-i18n="siteTitle"></h1>
       <p data-i18n="notice">各投稿の著作権は投稿者に帰属します。リンクをクリックすると元の投稿が別タブで開きます。</p>
+      <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSd1vxYWaE8tJTpYdxgsYhqW145EO_EHeZ_K-o488IU7y3q4uQ/viewform"
+          target="_blank" rel="noopener" data-i18n="contact">掲載停止・修正の依頼はこちら</a></p>
     </div>
     <button class="lang" id="lang" type="button"> English </button>
   </header>
@@ -333,10 +324,11 @@
       ja: {
         siteTitle: "Refashion Index",
         notice: "各投稿の著作権は投稿者に帰属します。リンクをクリックすると元の投稿が別タブで開きます。",
-        description: "服のリメイク方法を紹介しているInstagram・YouTubeの投稿を、持っている服の悩み・欲しい服の種類で探せるまとめサイトです。",
+        contact: "掲載停止・修正の依頼はこちら",
+        description: "服のリメイク方法を紹介しているSNSの投稿を、持っている服の悩み・欲しい服の種類で探せるまとめサイトです。",
         filters: "絞り込み", clear: "条件をクリア",
         loading: "読み込み中…",
-        loadError: "データを読み込めませんでした。CSV_URL が正しいか確認してください。",
+        loadError: "データを読み込めませんでした。時間をおいて再度お試しください。",
         count: (n, total) => `${n} 件 / 全 ${total} 件`,
         showIg: "Instagram の投稿を表示", showPost: "投稿を表示",
         viewHere: (t) => `${t} を別タブで開く`,
@@ -346,12 +338,13 @@
         no_facility: "特別な設備なし" 
       },
       en: {
-        siteTitle: "Clothing Remake Finder",
+        siteTitle: "Refashion Index",
         notice: "All posts belong to their creators. Links open the original post in a new tab.",
-        description: "Find Instagram and YouTube posts on remaking clothes, filtered by problem, and base or target garment type.",
+        contact: "Request removal or a correction",
+        description: "Find social media posts on remaking clothes, filtered by problem, and base or target garment type.",
         filters: "Filters", clear: "Clear filters",
         loading: "Loading…",
-        loadError: "Couldn't load the data. Check that CSV_URL is correct.",
+        loadError: "Couldn't load the posts. Please try again later.",
         count: (n, total) => `${n} of ${total} posts`,
         showIg: "View Instagram post", showPost: "View post",
         viewHere: (t) => `Open "${t}" in a new tab`,
@@ -487,8 +480,6 @@
         const thumb = yt
           ? `<img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">`
           : `<span>${esc(p.platform === "instagram" ? t("showIg") : t("showPost"))} </span>`;
-        const pills =
-          p.tags.problems.map((v) => `<span class="pill">${esc(tagLabel(v))}</span>`).join("");
         return `
           <article class="card">
             <a class="thumb" href="${esc(p.url)}" target="_blank" rel="noopener"
@@ -496,7 +487,6 @@
             <div class="body">
               <h3 class="title">${esc(title)}</h3>
               <p class="author">${esc(authorLabel(p.author))}</p>
-              <div>${pills}</div>
               <a class="src" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(t("original"))}</a>
             </div>
           </article>`;
