@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <!-- (1) スマホ対応に必須の1行。これがないとスマホでPC幅のまま縮小表示される -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Refashion Index</title>
+  <meta name="description" content="服のリメイク方法を紹介しているInstagram・YouTubeの投稿を、持っている服の悩み・作りたい服の種類で探せるまとめサイトです。">
+
+  <!-- (2) アクセス計測タグ（Cloudflare Web Analytics や GA4）はここに貼る -->
+
+  <style>
+    /* ===== 色の定義（ライト/ダーク両対応） ===== */
+    :root {
+      --bg: #fafaf8;
+      --card: #ffffff;
+      --text: #1f1f1d;
+      --sub: #5f5e5a;
+      --muted: #888780;
+      --line: #e3e1da;
+      --accent: #185fa5;
+      --accent-bg: #e6f1fb;
+      --radius: 10px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1a19;
+        --card: #262624;
+        --text: #f1efe8;
+        --sub: #b4b2a9;
+        --muted: #888780;
+        --line: #3a3a37;
+        --accent: #85b7eb;
+        --accent-bg: #0c447c;
+      }
+    }
+
+    /* ===== 基本（＝スマホ用。モバイルファースト） ===== */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    }
+
+    header {
+      padding: 16px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    header .head-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .lang {
+      font: inherit;
+      font-size: 13px;
+      min-height: 36px;
+      padding: 4px 12px;
+      flex-shrink: 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    header p {
+      font-size: 13px;
+      color: var(--sub);
+      margin: 4px 0 0;
+    }
+
+    .layout {
+      padding: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .filters {
+      margin-bottom: 16px;
+    }
+
+    .filters summary {
+      cursor: pointer;
+      font-weight: 600;
+      min-height: 44px;
+      /* タップしやすい高さ */
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card);
+    }
+
+    .filters summary::after {
+      content: "";
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+      border-right: 2px solid var(--sub);
+      border-bottom: 2px solid var(--sub);
+      transform: rotate(45deg);
+      transition: transform 0.15s;
+    }
+
+    .filters[open]>summary::after,
+    .advanced[open]>summary::after {
+      transform: rotate(-135deg);
+    }
+
+    .advanced {
+      margin-top: 12px;
+    }
+
+    .axis {
+      margin-top: 12px;
+    }
+
+    .axis h2 {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--sub);
+      margin: 0 0 6px;
+    }
+
+    .tag {
+      font: inherit;
+      font-size: 13px;
+      min-height: 36px;
+      padding: 6px 12px;
+      margin: 0 6px 6px 0;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .tag[aria-pressed="true"] {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .clear {
+      font: inherit;
+      font-size: 13px;
+      background: none;
+      border: none;
+      color: var(--accent);
+      cursor: pointer;
+      padding: 8px 0;
+      min-height: 36px;
+    }
+
+    .status {
+      font-size: 13px;
+      color: var(--sub);
+      margin-bottom: 8px;
+    }
+
+    /* カード一覧：幅に応じて列数が自動で変わる */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      background: var(--line);
+      color: var(--sub);
+      font: inherit;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .body {
+      padding: 10px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0 0 2px;
+    }
+
+    .author {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 11px;
+      padding: 2px 8px;
+      margin: 0 4px 4px 0;
+      border-radius: 999px;
+      background: var(--bg);
+      color: var(--sub);
+    }
+
+    .pill.lv {
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+
+    .src {
+      margin-top: auto;
+      padding-top: 4px;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* ===== 幅768px以上（タブレット・PC）で上書きする差分 ===== */
+    @media (min-width: 768px) {
+      .layout {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        /* 左に絞り込み、右に一覧 */
+        gap: 24px;
+        align-items: start;
+      }
+
+      .filters {
+        position: sticky;
+        top: 16px;
+        /* 画面に収まらないときは絞り込み欄だけをスクロールする */
+        max-height: calc(100vh - 32px);
+        overflow-y: auto;
+        overscroll-behavior: contain;
+      }
+
+      /* スクロールしても左に残る */
+      .grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="head-text">
+      <h1 data-i18n="siteTitle"></h1>
+      <p data-i18n="notice">各投稿の著作権は投稿者に帰属します。リンクをクリックすると元の投稿が別タブで開きます。</p>
+    </div>
+    <button class="lang" id="lang" type="button"> English </button>
+  </header>
+
+  <div class="layout">
+    <details class="filters" id="filters">
+      <summary data-i18n="filters">絞り込み</summary>
+      <div id="axes"></div>
+      <details class="advanced">
+        <summary data-i18n="advanced">詳細な設定</summary>
+        <div id="axes-advanced"></div>
+      </details>
+      <button class="clear" id="clear" type="button" data-i18n="clear">条件をクリア</button>
+    </details>
+
+    <main>
+      <p class="status" id="status"></p>
+      <div class="grid" id="grid"></div>
+    </main>
+  </div>
+
+  <!-- CSVを正しく読むためのライブラリ（カンマや改行を含むセルも扱える） -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script>
+    // ===== 設定：ここだけ書き換えればよい =====
+    // 手元で試すときは "sample.csv"。
+    // 公開時はスプレッドシートの「ウェブに公開」で得たCSVのURLに差し替える。
+    const CSV_URL = "data/posts.csv";
+    const TAGS_URL = "data/tags.csv";
+    // 絞り込みの軸。key は CSV の列名。
+    // list: true の列は「サイズ;丈」のように ; 区切りで複数の値を入れられる。
+    const AXES = [
+      { key: "problems", label: { ja: "解決したい悩み", en: "Problems to solve" }, list: true },
+      { key: "from", label: { ja: "元の服", en: "Original item" } },
+      { key: "to", label: { ja: "作るもの", en: "Make into" } },
+      { key: "facility", label: { ja: "特別な設備", en: "special tools" }, list: true, advanced: true, empty: "none" },
+      { key: "detailed", label: { ja: "丁寧な解説", en: "detailed explanation" }, advanced: true },
+    ];
+
+    const UI = {
+      ja: {
+        siteTitle: "Refashion Index",
+        notice: "各投稿の著作権は投稿者に帰属します。リンクをクリックすると元の投稿が別タブで開きます。",
+        description: "服のリメイク方法を紹介しているInstagram・YouTubeの投稿を、持っている服の悩み・欲しい服の種類で探せるまとめサイトです。",
+        filters: "絞り込み", clear: "条件をクリア",
+        loading: "読み込み中…",
+        loadError: "データを読み込めませんでした。CSV_URL が正しいか確認してください。",
+        count: (n, total) => `${n} 件 / 全 ${total} 件`,
+        showIg: "Instagram の投稿を表示", showPost: "投稿を表示",
+        viewHere: (t) => `${t} を別タブで開く`,
+        original: "元の投稿を見る ↗",
+        switchTo: "English",
+        advanced: "詳細な絞り込み",
+        no_facility: "特別な設備なし" 
+      },
+      en: {
+        siteTitle: "Clothing Remake Finder",
+        notice: "All posts belong to their creators. Links open the original post in a new tab.",
+        description: "Find Instagram and YouTube posts on remaking clothes, filtered by problem, and base or target garment type.",
+        filters: "Filters", clear: "Clear filters",
+        loading: "Loading…",
+        loadError: "Couldn't load the data. Check that CSV_URL is correct.",
+        count: (n, total) => `${n} of ${total} posts`,
+        showIg: "View Instagram post", showPost: "View post",
+        viewHere: (t) => `Open "${t}" in a new tab`,
+        original: "View original ↗",
+        switchTo: "日本語",
+        advanced: "Advanced filters",
+        no_facility: "no special facility" 
+      },
+    };
+
+    const selected = {};
+    let posts = [];
+    const LANGS = Object.keys(UI);
+    let tagTable = {};
+    let tagOrder = [];
+    let lang = pickLanguage();
+    const t = (key) => UI[lang][key];
+
+    function pickLanguage() {
+      const fromUrl = new URLSearchParams(location.search).get("lang");
+      if (LANGS.includes(fromUrl)) return fromUrl;
+      try {
+        const saved = localStorage.getItem("lang");
+        if (LANGS.includes(saved)) return saved;
+      } catch (e) { }
+      return (navigator.language || "").toLowerCase().startsWith("ja") ? "ja" : "en";
+    }
+
+    function setLanguage(next) {
+      lang = next;
+      try { localStorage.setItem("lang", next); } catch (e) { }
+      const url = new URL(location.href);
+      url.searchParams.set("lang", next);
+      history.replaceState(null, "", url);
+      applyStaticText();
+      buildFilters();
+      render();
+    }
+
+    function applyStaticText() {
+      document.documentElement.lang = lang;
+      document.title = t("siteTitle");
+      document.querySelector('meta[name="description"]').content = t("description");
+      document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+      $("lang").textContent = t("switchTo");
+    }
+
+    function tagLabel(value) {
+      const row = tagTable[value];
+      return (row && (row[lang] || row.ja)) || value;
+    }
+
+    function postTitle(p) {
+      return (lang === "en" && p.title_en) ? p.title_en : p.title;
+    }
+    function authorLabel(a) {
+      const s = String(a || "").trim().replace(/^@+/, "");  // 先頭の @ をいったん全部外す
+      return s ? "@" + s : "";                               // 空でなければ @ を1つ付ける
+    }
+    const $ = (id) => document.getElementById(id);
+
+    // HTMLに埋め込む文字列の無害化（シートに < などが入っても表示が壊れないように）
+    function esc(s) {
+      return String(s ?? "").replace(/[&<>"']/g, (c) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+
+    // YouTube のURLから動画IDを取り出す（watch?v= / youtu.be / shorts に対応）
+    function youtubeId(url) {
+      const m = String(url).match(/(?:v=|youtu\.be\/|shorts\/|embed\/)([\w-]{11})/);
+      return m ? m[1] : null;
+    }
+
+    // CSVの1行を扱いやすい形に整える
+    function normalize(row) {
+      const tags = {};
+      for (const axis of AXES) {
+        const raw = (row[axis.key] || "").trim() || axis.empty || "";
+        tags[axis.key] = axis.list
+          ? raw.split(/[;；]/).map((s) => s.trim()).filter(Boolean)
+          : (raw ? [raw] : []);
+      }
+      return { ...row, platform: (row.platform || "").trim().toLowerCase(), title: (row.title || "").trim(), tags };
+    }
+
+    // 絞り込みボタンを作る（値はCSVから自動で集める）
+    function buildFilters() {
+      $("axes").innerHTML = "";
+      $("axes-advanced").innerHTML = "";
+
+      for (const axis of AXES) {
+        const values = [...new Set(posts.flatMap((p) => p.tags[axis.key]))];
+        if (axis.order === "table") {
+          const pos = (v) => (tagOrder.includes(v) ? tagOrder.indexOf(v) : Infinity);
+          values.sort((a, b) => pos(a) - pos(b));
+        } else {
+          values.sort((a, b) => tagLabel(a).localeCompare(tagLabel(b), lang));
+        }
+
+        if (values.length === 0) continue;
+        const section = document.createElement("section");
+        section.className = "axis";
+        section.innerHTML = `<h2>${esc(axis.label[lang])}</h2>`;
+        for (const v of values) {
+          const b = document.createElement("button");
+          b.type = "button";
+          b.className = "tag";
+          b.textContent = tagLabel(v);
+          b.setAttribute("aria-pressed", selected[axis.key] === v ? "true" : "false");
+          b.addEventListener("click", () => {
+            selected[axis.key] = selected[axis.key] === v ? undefined : v;  // もう一度押すと解除
+            buildFilters();
+            render();
+          });
+          section.appendChild(b);
+        }
+        $(axis.advanced ? "axes-advanced" : "axes").appendChild(section);
+      }
+    }
+
+    // 条件に合う投稿をカードとして並べる
+    function render() {
+      const hits = posts.filter((p) =>
+        AXES.every((axis) => !selected[axis.key] || p.tags[axis.key].includes(selected[axis.key])));
+
+      $("status").textContent = t("count")(hits.length, posts.length);
+
+      $("grid").innerHTML = hits.map((p) => {
+        const title = postTitle(p);
+
+        const yt = p.platform === "youtube" ? youtubeId(p.url) : null;
+        const thumb = yt
+          ? `<img src="https://i.ytimg.com/vi/${yt}/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">`
+          : `<span>${esc(p.platform === "instagram" ? t("showIg") : t("showPost"))} </span>`;
+        const pills =
+          p.tags.problems.map((v) => `<span class="pill">${esc(tagLabel(v))}</span>`).join("");
+        return `
+          <article class="card">
+            <a class="thumb" href="${esc(p.url)}" target="_blank" rel="noopener"
+               aria-label="${esc(t("viewHere")(title))}">${thumb}</a>
+            <div class="body">
+              <h3 class="title">${esc(title)}</h3>
+              <p class="author">${esc(authorLabel(p.author))}</p>
+              <div>${pills}</div>
+              <a class="src" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(t("original"))}</a>
+            </div>
+          </article>`;
+      }).join("");
+    }
+
+    // ===== イベントの登録 =====
+    $("clear").addEventListener("click", () => {
+      for (const k in selected) delete selected[k];
+      buildFilters();
+      render();
+    });
+
+    // ===== データの読み込み =====
+    $("lang").addEventListener("click", () => {
+      setLanguage(LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length]);
+    });
+
+    applyStaticText();
+    $("status").textContent = t("loading");
+
+    function loadCsv(url) {
+      return new Promise((resolve, reject) => {
+        Papa.parse(url, {
+          download: true, header: true, skipEmptyLines: true,
+          complete: (res) => resolve(res.data), error: reject
+        });
+      });
+    }
+
+    Promise.all([
+      loadCsv(CSV_URL),
+      loadCsv(TAGS_URL).catch(() => []),   // 翻訳表がなくても動く
+    ]).then(([postRows, tagRows]) => {
+      for (const r of tagRows) {
+        const v = (r.value || "").trim();
+        if (!v) continue;
+        tagTable[v] = { ja: (r.ja || "").trim(), en: (r.en || "").trim() };
+        tagOrder.push(v);
+      }
+      posts = postRows.filter((r) => (r.url || "").trim()).map(normalize);
+      buildFilters();
+      render();
+    }).catch((e) => { console.error(e); $("status").textContent = t("loadError"); });
+  </script>
+</body>
+
+</html>
