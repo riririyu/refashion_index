@@ -325,7 +325,7 @@
       { key: "problems", label: { ja: "解決したい悩み", en: "Problems to solve" }, list: true },
       { key: "from", label: { ja: "元の服", en: "Original item" } },
       { key: "to", label: { ja: "作るもの", en: "Make into" } },
-      { key: "facility", label: { ja: "特別な設備", en: "special tools" }, list: true, advanced: true, empty: "none" },
+      { key: "facility", label: { ja: "特別な設備", en: "special tools" }, list: true, advanced: true, empty: "no_facility" },
       { key: "detailed", label: { ja: "丁寧な解説", en: "detailed explanation" }, advanced: true },
     ];
 
@@ -401,7 +401,7 @@
 
     function tagLabel(value) {
       const row = tagTable[value];
-      return (row && (row[lang] || row.ja)) || value;
+      return (row && (row[lang] || row.ja)) || UI[lang][value] ||value;
     }
 
     function postTitle(p) {
